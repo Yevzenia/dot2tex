@@ -446,7 +446,6 @@ def main(run_as_module=False, dotdata=None, options=None):
     try:
         s = conv.convert(dotdata)
         log.debug('Output:\n%s', s)
-
         if options.autosize:
             conv.dopreproc = False
             s = conv.convert(s)

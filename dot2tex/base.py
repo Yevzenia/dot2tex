@@ -604,7 +604,6 @@ class DotConvBase(object):
 
                 tmpdata = create_xdot(dotdata, self.options.get('prog', 'dot'),
                                       options=self.options.get('progoptions', ''))
-
                 if tmpdata is None or not tmpdata.strip():
                     log.error('Failed to create xdotdata. Is Graphviz installed?')
                     sys.exit(1)
