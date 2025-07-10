@@ -41,11 +41,12 @@ def create_xdot(dotdata, prog='dot', options=''):
     else:
         with open(tmp_name, 'w') as f:
             f.write(dotdata)
+
     output_format = 'xdot'
     progpath = '"%s"' % progs[prog].strip()
     cmd = progpath + ' -T' + output_format + ' ' + options + ' ' + tmp_name
     log.debug('Creating xdot data with: %s', cmd)
-    p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE, close_fds=(sys.platform != 'win32'), text=True)
+    p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE, close_fds=(sys.platform != 'win32'), text=True, encoding='utf8')
     (stdout, stderr) = (p.stdout, p.stderr)
     try:
         data = stdout.read()
@@ -556,6 +557,7 @@ class DotConvBase(object):
                 s += self.do_drawstring(label_string, edge)
                 s += self.do_drawstring(tail_label_string, edge, "tailtexlbl")
                 s += self.do_drawstring(head_label_string, edge, "headtexlbl")
+
         self.body += s
 
     def do_graph(self):
@@ -604,6 +606,7 @@ class DotConvBase(object):
 
                 tmpdata = create_xdot(dotdata, self.options.get('prog', 'dot'),
                                       options=self.options.get('progoptions', ''))
+
                 if tmpdata is None or not tmpdata.strip():
                     log.error('Failed to create xdotdata. Is Graphviz installed?')
                     sys.exit(1)
@@ -740,7 +743,6 @@ class DotConvBase(object):
         if getattr(drawobj, 'texmode', ''):
             texmode = drawobj.texmode
         text = getattr(drawobj, label_attribute, None)
-
         # log.warning('text %s %s',text,str(drawobj))
 
         if text is None or text.strip() == '\\N':
@@ -1023,10 +1025,10 @@ class TeXDimProc:
         for n in self.snippets_code:
             s += "\\begin{preview}%\n"
             s += n.strip() + "%\n"
-            s += r"\end{preview}%\n"
-        with open(self.tempfilename, 'w') as f:
+            s += "\\end{preview}%\n"
+        with open(self.tempfilename, 'w', encoding="utf8") as f:
             f.write(self.template.replace('<<preproccode>>', s))
-        with open(self.tempfilename, 'r') as f:
+        with open(self.tempfilename, 'r', encoding="utf8") as f:
             s = f.read()
         log.debug('Code written to %s\n' % self.tempfilename + s)
         self.parse_log_file()
@@ -1042,10 +1044,11 @@ class TeXDimProc:
         logfilename = os.path.splitext(self.tempfilename)[0] + '.log'
         tmpdir = os.getcwd()
         os.chdir(os.path.split(logfilename)[0])
+        self.tempfilename=os.path.abspath(os.path.realpath(self.tempfilename)) # get path latex can intepret
         if self.options.get('usepdflatex'):
-            command = 'pdflatex -interaction=nonstopmode %s' % self.tempfilename
+            command = 'pdflatex -interaction=nonstopmode "%s"' % self.tempfilename
         else:
-            command = 'latex -interaction=nonstopmode %s' % self.tempfilename
+            command = 'latex -interaction=nonstopmode "%s"' % self.tempfilename
         log.debug('Running command: %s' % command)
 
         p = Popen(command, shell=True, stdout=PIPE, stderr=PIPE, close_fds=(sys.platform != 'win32'))
@@ -1064,9 +1067,14 @@ class TeXDimProc:
             stderr.close()
         p.kill()
         p.wait()
-
-        with open(logfilename, 'r') as f:
+        
+        if sys.platform == "win32":
+            logFileEncoding='ANSI'
+        else:
+            logFileEncoding='utf8'
+        with open(logfilename, 'r', encoding=logFileEncoding) as f:
             logdata = f.read()
+
         log.debug('Logfile from LaTeX run: \n' + logdata)
         os.chdir(tmpdir)
 

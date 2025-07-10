@@ -858,7 +858,6 @@ class Dot2TikZConv(Dot2PGFConv):
                     sn += "  \\node (%s) at (%s) [%s,%s] {%s};\n" % \
                           (tikzify(node.name), pos, drawstr, shape, label)
             sn += self.end_node(node)
-
             s += sn
         if nodeoptions:
             s += "\\end{scope}\n"
