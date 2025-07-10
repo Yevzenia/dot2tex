@@ -41,7 +41,6 @@ def create_xdot(dotdata, prog='dot', options=''):
     else:
         with open(tmp_name, 'w') as f:
             f.write(dotdata)
-
     output_format = 'xdot'
     progpath = '"%s"' % progs[prog].strip()
     cmd = progpath + ' -T' + output_format + ' ' + options + ' ' + tmp_name
@@ -557,7 +556,6 @@ class DotConvBase(object):
                 s += self.do_drawstring(label_string, edge)
                 s += self.do_drawstring(tail_label_string, edge, "tailtexlbl")
                 s += self.do_drawstring(head_label_string, edge, "headtexlbl")
-
         self.body += s
 
     def do_graph(self):

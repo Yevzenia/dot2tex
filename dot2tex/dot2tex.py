@@ -445,7 +445,7 @@ def main(run_as_module=False, dotdata=None, options=None):
         sys.exit(1)
     try:
         s = conv.convert(dotdata)
-        log.debug('OutputHIER:\n%s', s)
+        log.debug('Output:\n%s', s)
 
         if options.autosize:
             conv.dopreproc = False
