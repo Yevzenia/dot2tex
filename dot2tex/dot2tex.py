@@ -253,7 +253,7 @@ def print_version_info():
 
 
 def load_dot_file(filename):
-    with open(filename, 'r') as f:
+    with open(filename, 'r', encoding="utf8") as f:
         dotdata = f.readlines()
     log.info('Data read from %s' % filename)
     return dotdata
@@ -282,14 +282,11 @@ def main(run_as_module=False, dotdata=None, options=None):
         sys.exit(0)
 
     if options.debug:
-        # initialize log handler
-        if run_as_module:
-            pass
-        else:
-            hdlr = logging.FileHandler('dot2tex.log')
-            log.addHandler(hdlr)
-            formatter = logging.Formatter('%(asctime)s %(name)s %(levelname)s %(message)s')
-            hdlr.setFormatter(formatter)
+        # initalize log handler
+        hdlr = logging.FileHandler('./dot2tex.log',mode='w', encoding='utf-8')
+        log.addHandler(hdlr)
+        formatter = logging.Formatter('%(asctime)s %(name)s %(levelname)s %(message)s')
+        hdlr.setFormatter(formatter)
         log.setLevel(logging.DEBUG)
         nodebug = False
     else:
@@ -454,7 +451,7 @@ def main(run_as_module=False, dotdata=None, options=None):
             s = conv.convert(s)
             log.debug('Output after preprocessing:\n%s', s)
         if options.outputfile:
-            with open(options.outputfile, 'w') as f:
+            with open(options.outputfile, 'w' ,encoding="utf-8") as f:
                 f.write(s)
         else:
             if not run_as_module:
